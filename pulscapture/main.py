@@ -18,8 +18,17 @@ import sys
 import threading
 import logging
 import time
-
+import django
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+import pulscapture.settings
 import RPi.GPIO as GPIO
+
+settings.configure(default_settings=pulscapture.settings, DEBUG=True)
+django.setup()
+
+# Now this script or any imported module can use any part of Django it needs.
+from api.models import PulseOutput, Pulse
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -49,6 +58,8 @@ pulses = {
 
 rQueue = queue.Queue()
 
+pulse_outputs = PulseOutput.objects.all()
+
 
 def signal_handler(sig, frame):
     print("CleanUp GPIO")
@@ -65,6 +76,8 @@ class PulseQueueHandler:
         self.thread.start()
 
     def run(self):
+        global pulse_outputs
+
         while True:
             try:
                 s = self.inQueue.get(block=True, timeout=0.1)
@@ -74,6 +87,10 @@ class PulseQueueHandler:
             pulse_name = pulses.get(s)
             logger.debug(pulse_name)
             # Store Event
+
+            pulse_output = pulse_outputs.get(channel=s)
+            new_pulse = Pulse(pulse_output=pulse_output)
+            new_pulse.save()
             # Calculate bucket values
 
 
@@ -89,15 +106,32 @@ def set_pulse_channel(channel):
                           callback=pulse_received_callback, bouncetime=100)
 
 
+def check_pulse_output_config(channel, name):
+    global pulse_outputs
+
+    try:
+        pulse_output_found = pulse_outputs.get(channel=channel)
+    except ObjectDoesNotExist:
+        pulse_output = PulseOutput(channel=channel, name=name)
+        pulse_output.save()
+
+
 if __name__ == '__main__':
+
     GPIO.setmode(GPIO.BCM)
 
     # Handle the pulseitems on the queue
-    pulsHandler = PulseQueueHandler(rQueue)
+    pulseHandler = PulseQueueHandler(rQueue)
+
+
 
     # setup pulse channels
     for pulse in pulses.keys():
         set_pulse_channel(pulse)
+        check_pulse_output_config(pulse, pulses[pulse])
+
+    # refresh pulse_outputs in DB
+    pulse_outputs = pulse_outputs.all()
 
     # test
     time.sleep(5)
