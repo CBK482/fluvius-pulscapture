@@ -50,9 +50,9 @@ pulses = {
     P_O_ACTIEF_GPIO: "+P actief levering",
     Q1_O_INDUCTIEF_GPIO: "Q1 inductief levering",
     Q4_O_CAPACITIEF_GPIO: "Q4 capacitief levering",
-    P_I_ACTIEF_GPIO: "–P actief teruglevering",
+    P_I_ACTIEF_GPIO: "-P actief teruglevering",
     Q2_O_INDUCTIEF_GPIO: "Q2 capacitief teruglevering",
-    Q3_O_CAPACITIEF_GPIO: "Q3_O_CAPACITIEF_GPIO",
+    Q3_O_CAPACITIEF_GPIO: "Q3 inductief teruglevering",
     SYNC_GPIO: "Synchronisatiepuls"
 }
 
@@ -122,8 +122,6 @@ if __name__ == '__main__':
 
     # Handle the pulseitems on the queue
     pulseHandler = PulseQueueHandler(rQueue)
-
-
 
     # setup pulse channels
     for pulse in pulses.keys():

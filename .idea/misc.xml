@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="Remote Python 3.9.2 (sftp://pi@192.168.1.36:22/home/pi/.virtualenvs/fluvius-pulscapture/bin/python)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.9.2 (sftp://pi@192.168.1.36:22/home/pi/.virtualenvs/fluvius-pulscapture/bin/python)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.9.2 (sftp://pulscapture@192.168.1.55:22/home/pulscapture/.virtualenvs/fluvius-pulscapture/bin/python)" project-jdk-type="Python SDK" />
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />
   </component>
