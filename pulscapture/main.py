@@ -12,6 +12,7 @@
 • Klem 8 Q2 capacitief teruglevering van klant (+c) GRIJS
 • Klem 9 Q3 inductief teruglevering van klant (-i) WIT
 """
+import datetime
 import queue
 import signal
 import sys
@@ -21,6 +22,7 @@ import time
 import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import get_current_timezone
 import pulscapture.settings
 import RPi.GPIO as GPIO
 
@@ -29,6 +31,8 @@ django.setup()
 
 # Now this script or any imported module can use any part of Django it needs.
 from api.models import PulseOutput, Pulse
+
+tz = get_current_timezone()
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -55,6 +59,8 @@ pulses = {
     Q3_O_CAPACITIEF_GPIO: "Q3 inductief teruglevering",
     SYNC_GPIO: "Synchronisatiepuls"
 }
+
+last_pulse_received = {}
 
 rQueue = queue.Queue()
 
@@ -91,7 +97,10 @@ class PulseQueueHandler:
             pulse_output = pulse_outputs.get(channel=s)
             new_pulse = Pulse(pulse_output=pulse_output)
             new_pulse.save()
+
             # Calculate bucket values
+
+            last_pulse_received[s] = new_pulse.created
 
 
 def pulse_received_callback(channel):
@@ -108,12 +117,24 @@ def set_pulse_channel(channel):
 
 def check_pulse_output_config(channel, name):
     global pulse_outputs
+    global last_pulse_received
+
+    pulse_output = None
+    last_received = datetime.datetime.today().replace(tzinfo=tz)
 
     try:
-        pulse_output_found = pulse_outputs.get(channel=channel)
+        pulse_output = pulse_outputs.get(channel=channel)
     except ObjectDoesNotExist:
         pulse_output = PulseOutput(channel=channel, name=name)
         pulse_output.save()
+
+    # Get the last pulse received for a channel.
+    try:
+        last_received = Pulse.objects.filter(pulse_output=pulse_output).latest('id').created
+    except ObjectDoesNotExist:
+        pass
+
+    last_pulse_received[channel] = last_received
 
 
 if __name__ == '__main__':

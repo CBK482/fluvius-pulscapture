@@ -18,6 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Remote Python 3.9.2 (sftp://pulscapture@192.168.1.55:22/home/pulscapture/.virtualenvs/fluvius-pulscapture/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="chart.js" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

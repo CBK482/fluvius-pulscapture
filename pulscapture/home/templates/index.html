@@ -1,32 +1,41 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 
-    <div>
-        <canvas id="myChart"></canvas>
-    </div>
+    <canvas id="myChart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static "chartjs/js/chart.js" %}"></script>
 
     <script>
-        const ctx = document.getElementById('myChart');
+        $(document).ready(function () {
+            const ctx = document.getElementById('myChart');
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+            let chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: [{
+                            x: '2021-11-06 23:39:30',
+                            y: 50
+                        }, {
+                            x: '2021-11-07 01:00:28',
+                            y: 60
+                        }, {
+                            x: '2021-11-07 09:00:28',
+                            y: 20
+                        }]
+                    }],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            min: '2021-11-07 00:00:00',
+                        }
                     }
                 }
-            }
-        });
+            });
+        })
+        ;
     </script>
+
 {% endblock %}

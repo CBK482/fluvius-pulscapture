@@ -11,5 +11,5 @@ class PulseOutput(models.Model):
 
 
 class Pulse(models.Model):
-    pulse_output = models.ForeignKey(PulseOutput, on_delete=models.CASCADE)
+    pulse_output = models.ForeignKey(PulseOutput, on_delete=models.RESTRICT)
     created = models.DateTimeField(auto_now_add=True)
